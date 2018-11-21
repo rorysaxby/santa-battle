@@ -55,7 +55,7 @@ santaBattle.prototype.idKey = function (e) {
 			break;
 		case 32:
 			// space
-			//game.getMousePos();
+
 			break;
 	};
 };
@@ -217,8 +217,6 @@ santaBattle.prototype.initPieces = function () {
 			});
 		};
 	}, 2000); // random interval depending on level
-
-	// this.watchPieces();
 };
 
 santaBattle.prototype.removeLoadedPiece = function (id) {
@@ -228,6 +226,62 @@ santaBattle.prototype.removeLoadedPiece = function (id) {
 			return;
 		};
 	};
+};
+
+santaBattle.prototype.initCollisionWatch = function () {
+	var _ = this;
+	this.collisionWatch = setInterval(_.collisionTest.bind(_), 500);
+};
+
+santaBattle.prototype.collisionTest = function () {
+	this.identifyPiecePositions();
+	this.positionData(this.opts.player);
+	this.closePieces = this.getClosePieces();
+	this.result = this.identifyCollision();
+	console.log(this.result);
+};
+
+santaBattle.prototype.identifyCollision = function () {
+	for (var i = 0; i < this.closePieces.length; i++) {
+		var piece = this.closePieces[i];
+		if (piece.y > this.opts.player.y && piece.y + piece.height < this.opts.player.y + this.opts.player.height && piece.x < this.opts.player.x + this.opts.player.width && piece.x + piece.width < this.opts.player.x) {
+			return piece;
+		};
+	};
+	return false;
+};
+
+santaBattle.prototype.getClosePieces = function () {
+	var array = [];
+
+	for (var i = 0; i < this.loadedPieces.length; i++) {
+		if (this.loadedPieces[i].x < this.opts.player.x + this.opts.player.width + 10) {
+			var obj = {
+				id: this.loadedPieces[i].id,
+				width: this.loadedPieces[i].width,
+				height: this.loadedPieces[i].height,
+				x: this.loadedPieces[i].x,
+				y: this.loadedPieces[i].y
+			};
+			array.push(obj);
+		};
+	};
+	return array;
+};
+
+santaBattle.prototype.identifyPiecePositions = function () {
+	for (var i = 0; i < this.loadedPieces.length; i++) {
+		this.positionData(this.loadedPieces[i]);
+	};
+};
+
+santaBattle.prototype.positionData = function (obj) {
+	var target = $("#" + obj.id),
+	    pos = target[0].getBoundingClientRect();
+	obj.width = target[0].clientWidth;
+	obj.height = target[0].clientHeight;
+	obj.y = Math.floor(pos.top);
+	obj.x = Math.floor(pos.left);
 };
 
 /* Init functions */
@@ -243,6 +297,7 @@ santaBattle.prototype.startGame = function () {
 	this.bindControls();
 	this.loadPlayer();
 	this.initPieces();
+	this.initCollisionWatch();
 };
 
 (function () {
