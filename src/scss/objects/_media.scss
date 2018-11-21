@@ -1,0 +1,13 @@
+.media-item {
+    @extend %cf;
+    padding: 20px 0;
+
+    img {
+        display: block;
+        margin: 0 auto 20px auto;
+
+        @include min(750px) {
+            margin-right: 60px;
+        }
+    }
+}

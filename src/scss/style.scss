@@ -1,0 +1,40 @@
+﻿/* SETTINGS */
+@import "settings/fonts";
+@import "settings/global";
+@import "settings/colors";
+@import "settings/extendables";
+
+/* TOOLS */
+@import "tools/functions";
+@import "tools/mixins";
+
+/* GENERIC */
+@import "generic/normalize";
+@import "generic/box-sizing";
+@import "generic/reset";
+
+/* ELEMENTS */
+@import "elements/page";
+@import "elements/headings";
+@import "elements/typography";
+@import "elements/images";
+@import "elements/tables";
+@import "elements/input";
+
+/* OBJECTS */
+@import "objects/wrappers";
+@import "objects/layout";
+@import "objects/media";
+@import "objects/shared";
+@import "objects/video";
+
+/* COMPONENTS */
+@import "components/game-ctrls";
+@import "components/game-container";
+@import "components/santa";
+@import "components/pieces";
+
+/*#region TRUMPS */
+@import "trumps/print";
+@import "trumps/quick-fix";
+/*#endregion*/

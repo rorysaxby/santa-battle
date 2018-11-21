@@ -1,0 +1,10 @@
+// Unit stripper [10px = 10]
+@function strip-unit($num) {
+    @return $num / ($num * 0 + 1);
+}
+
+// Convert PX value to EM value [100px = 6.25em]
+@function pxToEM($target) {
+    @if $target == 0 { @return 0 }
+    @return $target / 16 + 0em;
+}

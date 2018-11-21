@@ -1,0 +1,23 @@
+/*
+    Settings: COLORS
+
+    The color palette is where colors across the site are set.
+    Here are the rules:
+        -   Only reference specific hexadecimal colors within the Color Palette area of this partial.
+        -   Color names are based on hexadecimal color here: http://chir.ag/projects/name-that-color/
+        -   These variables will be used in various places
+*/
+
+$color-black: #000000;
+$color-white: #ffffff;
+
+$color-red:#C51212;
+$color-blue:blue;
+
+$color-mid-grey:#7f7f7f;
+
+/* Brand colors - prefix with $brand-entercolorname */
+
+$color-red-santa:#c82a2a;
+
+
