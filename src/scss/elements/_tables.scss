@@ -1,0 +1,27 @@
+table {
+    border-collapse: collapse;
+	border-spacing: 0;
+    width: 100%;
+
+    th,
+    td {
+        border-bottom: 1px solid $color-black;
+        padding: 1.5rem;
+
+        @include min(500px) {
+            padding: 2.5rem;
+        }
+    }
+
+    th {
+        text-align: left;
+    }
+
+    td {
+        border-left: 1px solid $color-black;
+
+        &:first-child {
+            border-left: 0;
+        }
+    }
+}

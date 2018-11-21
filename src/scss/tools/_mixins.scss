@@ -1,0 +1,144 @@
+﻿/*
+    Tools: MIXINS
+
+    SCSS mixins. It is good practice to show how each mixin should be called and the CSS it will output.
+*/
+
+
+/*
+Max-width media query
+
+div {
+	@include max(768px) {
+		display: none;
+	}
+}
+
+Output:
+@media (max-width: 768px) {
+	div {
+		display: none;
+	}
+}
+*/
+@mixin max($maxwidth: $width) {
+    @media (max-width: $maxwidth) {
+        @content;
+    }
+}
+
+
+/*
+Min-width media query
+
+div {
+	@include min(768px) {
+		display: block;
+	}
+}
+
+Output:
+@media (min-width: 768px) {
+	div {
+		display: block;
+	}
+}
+*/
+@mixin min($minwidth: $width) {
+    @media (min-width: $minwidth) {
+        @content;
+    }
+}
+
+/*
+Font size rem to px fallback for IE8
+
+p {
+    @include font-size(16);
+}
+
+Output:
+p {
+    font-size: 16px;
+    font-size: 1.6rem;
+}
+*/
+
+@mixin font-size($sizeValue: 18) {
+    font-size: $sizeValue + px;
+    font-size: ($sizeValue / 10) + rem;
+}
+
+
+/* Column Percentage Width calculation
+    
+    Summary: Set a default maxColCount and automatically count the percentage for the number of columns provided
+
+    SCSS example:
+
+    First set your global col variable - $maxColCount: 12;
+
+    .item {
+        @include colNum(3)
+    }
+
+    Output:
+
+    col-item{
+        width: 25%;
+    }
+*/
+
+$maxColCount: 12;
+
+@mixin colNum($val) {
+    width: percentage($val/$maxColCount);
+    @content;
+}
+
+
+@mixin twoCol {
+    @include min($width-tablet) {
+    -webkit-column-count: 2;
+    -moz-column-count: 2;
+    column-count: 2;
+    -webkit-column-gap: 40px;
+    column-gap: 40px;
+    -moz-column-gap: 40px;
+    }
+}
+
+
+
+/* Key Frames mixin to cover compatability
+
+@include keyframes( subNavIn ) {
+    0% {
+        left:100%;
+    }
+
+    100% {
+        color: #0f0;
+    }
+}
+
+*/
+
+
+@mixin keyframes( $animationName ) {
+    @-webkit-keyframes $animationName{
+        @content;
+    }
+
+    @-moz-keyframes $animationName {
+        @content;
+    }
+
+    @-o-keyframes $animationName {
+        @content;
+    }
+
+    @keyframes $animationName {
+        @content;
+    }
+}

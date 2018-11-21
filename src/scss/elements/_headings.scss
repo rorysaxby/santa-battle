@@ -1,0 +1,57 @@
+h1, h2, h3, h4, h5, h6 {
+    font-family:Arial, sans-serif;
+    line-height: 1.2;
+    font-weight: normal;
+    letter-spacing:2px;
+}
+
+%e-h1{
+    @include font-size(18);
+    margin-top: 1em;
+    margin-bottom: 1.25em;
+    text-align:center;
+
+    @include min($width-tablet) {
+        @include font-size(30);
+    }
+    
+}
+
+%e-h2{
+    @include font-size(14);
+    margin-bottom: 1.25em;
+    margin-top: 2em;
+    line-height: 1.5;
+
+    @include min($width-tablet) {
+        @include font-size(21);
+    }
+}
+
+h1 {
+    @extend %e-h1;
+}
+
+h2 {
+    @extend %e-h2;
+}
+
+h3 {
+    @include font-size(14);
+    margin-bottom: 0.5em;
+}
+
+h4 {
+    @include font-size(14);
+    margin-bottom: 1em;
+}
+
+h5 {
+    @include font-size(14);
+    margin-bottom: 0.5em;
+}
+
+h6 {
+    @include font-size(14);
+    margin-bottom: 0.5em;
+}
