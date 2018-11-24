@@ -1,3 +1,12 @@
+function clone(obj) {
+    if (null == obj || "object" != typeof obj) return obj;
+    var copy = obj.constructor();
+    for (var attr in obj) {
+        if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+    }
+    return copy;
+};
+
 var santaBattle = function(opts){
 
 	this.opts = {};
@@ -137,7 +146,7 @@ santaBattle.prototype.selectPiece = function (){
 		if(weightSum > 0){
 			for(var j = 0; j < this.opts.pieces.length; j++){
 				if(this.opts.pieces[j].weight === weightSum){
-					return this.opts.pieces[j];
+					return clone(this.opts.pieces[j]);
 				}
 			}
 		}
@@ -173,12 +182,12 @@ santaBattle.prototype.pieceSetup = function(opts){
 
 santaBattle.prototype.pieceSetup.prototype.anim = function(){
 	var _ = this;
-	this.pieceAnim = setInterval(_.animLeft.bind(_),500);
+	this.pieceAnim = setInterval(_.animLeft.bind(_),300);
 };
 
 santaBattle.prototype.pieceSetup.prototype.animLeft = function(){
 	this.pieceTarget.css({
-		left: this.pieceTarget[0].offsetLeft - 10 + "px"
+		left: this.pieceTarget[0].offsetLeft - 20 + "px"
 	});
 
 	if(this.pieceTarget[0].offsetLeft <= -this.pieceTarget[0].clientWidth){
@@ -212,7 +221,7 @@ santaBattle.prototype.initPieces = function (){
 				removeFn: _.removeLoadedPiece.bind(_)
 			});
 		};
-	}, 2000); // random interval depending on level
+	}, 10000); // random interval depending on level
 };
 
 santaBattle.prototype.removeLoadedPiece = function (id){
@@ -227,7 +236,7 @@ santaBattle.prototype.removeLoadedPiece = function (id){
 
 santaBattle.prototype.initCollisionWatch = function(){
 	var _ = this;
-	this.collisionWatch = setInterval(_.collisionTest.bind(_),500);
+	this.collisionWatch = setInterval(_.collisionTest.bind(_),100);
 };
 
 
@@ -242,16 +251,24 @@ santaBattle.prototype.collisionTest = function(){
 santaBattle.prototype.identifyCollision = function(){
 	for(var i = 0; i < this.closePieces.length; i++){
 		var piece = this.closePieces[i];
-		if(piece.y > this.opts.player.y && 
-		piece.y + piece.height < this.opts.player.y + this.opts.player.height &&
-		piece.x < this.opts.player.x + this.opts.player.width &&
-		piece.x + piece.width < this.opts.player.x
+		
+		if(
+			this.opts.player.x + this.opts.player.width >= piece.x &&
+			this.opts.player.x < piece.x + piece.width &&
+			this.opts.player.y + this.opts.player.height > piece.y &&
+			this.opts.player.y < piece.y + piece.height
 		){
 			return piece;
 		};
 	};
 	return false;
 };
+
+// piece.y < this.opts.player.y + this.opts.player.height ||
+// 		piece.y + piece.height < this.opts.player.y + this.opts.player.height 
+// 		&&
+// 		piece.x < this.opts.player.x + this.opts.player.width ||
+// 		piece.x + piece.width < this.opts.player.x
 
 santaBattle.prototype.getClosePieces = function(){
 	var array = [];
