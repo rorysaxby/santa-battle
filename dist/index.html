@@ -9,11 +9,28 @@
 		
 	</head>
 	<body>
-		<div class="c-game-ctrls">
-			<button id="startGame">Start</button>
-		</div>
-        <div id="santaBattle" class="c-game-container">
+		<div class="c-score-screen">
+			<div class="c-score-screen__box">
+				<h1>Santa Battle</h1>
 
+				<div class="c-sores">
+					<ul>
+						<li class="c-sores__level">Level: <span>0</span></li>
+						<li class="c-sores__presents">Presents: <span>0</span></li>
+						<li class="c-sores__total">Score: <span>0</span></li>
+					</ul>
+				</div>
+
+				<div class="c-game-ctrls">
+					<ul>
+						<li><button id="startBtn" class="c-button c-button--go">Start</button></li>
+						<li class="visually-hidden"><button id="resetBtn" class="c-button c-button--go">Try again</button></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+        <div id="santaBattle" class="c-game-container">
         </div>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>

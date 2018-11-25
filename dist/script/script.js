@@ -1,21 +1,20 @@
-function clone(obj) {
-	if (null == obj || "object" != typeof obj) return obj;
-	var copy = obj.constructor();
-	for (var attr in obj) {
-		if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
-	}
-	return copy;
-};
-
 var santaBattle = function (opts) {
 
 	this.opts = {};
-
+	this.opts.scoreList = opts.scoreList;
+	this.opts.startBtnId = opts.startBtnId;
+	this.opts.resetBtnId = opts.resetBtnId;
+	this.opts.scoreScreen = opts.scoreScreen;
+	this.opts.scoreScreenSmallClass = opts.scoreScreenSmallClass;
 	this.opts.loadViewTarget = opts.loadView || false;
 	this.opts.player = opts.player || false;
 	this.opts.level = opts.level || 1;
 	this.opts.pieces = opts.pieces;
 	this.html = opts.html;
+
+	this.hiddenClass = "visually-hidden";
+
+	this.collectedPieces = [];
 
 	if (this.opts.loadViewTarget && this.opts.player) {
 		this.loadView = $(this.opts.loadViewTarget);
@@ -34,9 +33,17 @@ santaBattle.prototype.buildPiece = function (obj) {
 	return piece;
 };
 
+santaBattle.prototype.copyObj = function (obj) {
+	var copy = obj.constructor();
+	for (var attr in obj) {
+		if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+	}
+	return copy;
+};
+
 /* Controls */
 
-santaBattle.prototype.bindControls = function () {
+santaBattle.prototype.bindPlayerControls = function () {
 	document.addEventListener("keydown", this.idKey.bind(this), false);
 };
 
@@ -134,24 +141,24 @@ santaBattle.prototype.setPlayerPos = function (top, left) {
 santaBattle.prototype.selectPiece = function () {
 	// add up all the weights
 	var weightSum = 0;
-	for (var i = 0; i < this.opts.pieces.length; i++) {
-		weightSum += this.opts.pieces[i].weight;
+	for (var i = 0; i < this.piecesList.length; i++) {
+		weightSum += this.piecesList[i].weight;
 	};
 
 	while (weightSum > 0) {
 
 		// select random piece index
 
-		var index = Math.floor(Math.random() * Math.floor(this.opts.pieces.length - 1));
+		var index = Math.floor(Math.random() * Math.floor(this.piecesList.length - 1));
 
 		// select random piece index
 
-		weightSum -= this.opts.pieces[index].weight;
+		weightSum -= this.piecesList[index].weight;
 
 		if (weightSum > 0) {
-			for (var j = 0; j < this.opts.pieces.length; j++) {
-				if (this.opts.pieces[j].weight === weightSum) {
-					return clone(this.opts.pieces[j]);
+			for (var j = 0; j < this.piecesList.length; j++) {
+				if (this.piecesList[j].weight === weightSum) {
+					return this.copyObj(this.piecesList[j]);
 				}
 			}
 		}
@@ -196,7 +203,6 @@ santaBattle.prototype.pieceSetup.prototype.animLeft = function () {
 	});
 
 	if (this.pieceTarget[0].offsetLeft <= -this.pieceTarget[0].clientWidth) {
-		this.pieceTarget[0].remove();
 		this.removeFn(this.piece.id);
 		clearInterval(this.pieceAnim);
 	};
@@ -225,12 +231,14 @@ santaBattle.prototype.initPieces = function () {
 				removeFn: _.removeLoadedPiece.bind(_)
 			});
 		};
-	}, 10000); // random interval depending on level
+	}, 2000); // random interval depending on level
 };
 
 santaBattle.prototype.removeLoadedPiece = function (id) {
 	for (var i = 0; i < this.loadedPieces.length; i++) {
 		if (this.loadedPieces[i].id === id) {
+			var ele = document.getElementById(this.loadedPieces[i].id);
+			ele.parentNode.removeChild(ele);
 			this.loadedPieces.splice(i, 1);
 			return;
 		};
@@ -247,8 +255,35 @@ santaBattle.prototype.collisionTest = function () {
 	this.positionData(this.opts.player);
 	this.closePieces = this.getClosePieces();
 	this.result = this.identifyCollision();
-	console.log(this.result);
+	if (this.result) this.resultAction();
 };
+
+santaBattle.prototype.resultAction = function () {
+	switch (this.result.type) {
+		case "collectable":
+			this.removeLoadedPiece(this.result.id);
+			this.collectPoints();
+			this.addPieceToCollection();
+			break;
+		case "points":
+			this.removeLoadedPiece(this.result.id);
+			this.collectPoints();
+			break;
+		case "baddie":
+			this.endGame();
+			break;
+	}
+};
+
+santaBattle.prototype.addPieceToCollection = function () {
+	this.collectedPieces.push(this.result);
+};
+
+santaBattle.prototype.collectPoints = function () {
+	this.score += this.result.points;
+};
+
+santaBattle.prototype.endGame = function () {};
 
 santaBattle.prototype.identifyCollision = function () {
 	for (var i = 0; i < this.closePieces.length; i++) {
@@ -261,25 +296,12 @@ santaBattle.prototype.identifyCollision = function () {
 	return false;
 };
 
-// piece.y < this.opts.player.y + this.opts.player.height ||
-// 		piece.y + piece.height < this.opts.player.y + this.opts.player.height 
-// 		&&
-// 		piece.x < this.opts.player.x + this.opts.player.width ||
-// 		piece.x + piece.width < this.opts.player.x
-
 santaBattle.prototype.getClosePieces = function () {
 	var array = [];
 
 	for (var i = 0; i < this.loadedPieces.length; i++) {
 		if (this.loadedPieces[i].x < this.opts.player.x + this.opts.player.width + 10) {
-			var obj = {
-				id: this.loadedPieces[i].id,
-				width: this.loadedPieces[i].width,
-				height: this.loadedPieces[i].height,
-				x: this.loadedPieces[i].x,
-				y: this.loadedPieces[i].y
-			};
-			array.push(obj);
+			array.push(this.copyObj(this.loadedPieces[i]));
 		};
 	};
 	return array;
@@ -300,18 +322,51 @@ santaBattle.prototype.positionData = function (obj) {
 	obj.x = Math.floor(pos.left);
 };
 
+santaBattle.prototype.preparePiecesList = function () {
+	this.piecesList = [];
+	for (var i = 0; i < this.opts.pieces.length; i++) {
+		for (var j = 0; j < this.opts.pieces[i].weight * 2; j++) {
+			this.piecesList.push(this.copyObj(this.opts.pieces[i]));
+		}
+	}
+};
+
 /* Init functions */
 
-santaBattle.prototype.init = function () {
+santaBattle.prototype.smallScoreScreen = function () {
+	this.scoreScreen.addClass(this.opts.scoreScreenSmallClass);
+};
+
+santaBattle.prototype.largeScoreScreen = function () {};
+
+santaBattle.prototype.bindLoadBtns = function () {
 	var _ = this;
-	$('#startGame').off('click').on('click', function () {
+
+	this.startBtn.addEventListener('click', function () {
+		_.smallScoreScreen();
 		_.startGame();
+	});
+
+	this.resetBtn.addEventListener('click', function () {
+		_.resetGame();
 	});
 };
 
+santaBattle.prototype.optsTargets = function () {
+	this.scoreScreen = $(this.opts.scoreScreen);
+	this.startBtn = document.getElementById(this.opts.startBtnId);
+	this.resetBtn = document.getElementById(this.opts.resetBtnId);
+};
+
+santaBattle.prototype.init = function () {
+	this.optsTargets();
+	this.bindLoadBtns();
+};
+
 santaBattle.prototype.startGame = function () {
-	this.bindControls();
 	this.loadPlayer();
+	this.bindPlayerControls();
+	this.preparePiecesList();
 	this.initPieces();
 	this.initCollisionWatch();
 };
@@ -321,6 +376,17 @@ santaBattle.prototype.startGame = function () {
 	$(function () {
 		const game = new santaBattle({
 			loadView: '#santaBattle',
+			scoreScreen: '.c-score-screen',
+			scoreScreenSmallClass: 'c-score-screen--small',
+			scoreList: {
+				target: '.c-scores',
+				inlineClass: '.c-scores--inline',
+				level: 'c-scores__level',
+				presents: 'c-scores__presents',
+				total: 'c-scores__total'
+			},
+			startBtnId: 'startBtn',
+			resetBtnId: 'resetBtn',
 			player: {
 				id: 'player1',
 				class: 'c-santa'
@@ -334,7 +400,7 @@ santaBattle.prototype.startGame = function () {
 			}, {
 				class: "c-piece c-piece--bonus",
 				points: 50,
-				type: "collectable",
+				type: "points",
 				weight: 1
 			}, {
 				class: "c-piece c-piece--old-boot",
@@ -348,7 +414,7 @@ santaBattle.prototype.startGame = function () {
 			chimney: {
 				class: "c-chimney",
 				type: "catcher",
-				weight: 2,
+				weight: 1,
 				points: 30
 			}
 		});
