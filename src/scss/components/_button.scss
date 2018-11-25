@@ -1,0 +1,11 @@
+.c-button{
+    display:block;
+    background-color:$color-grey-light;
+    padding:1.5rem 3rem;
+    border-radius:1rem;
+
+    &--go{
+        color:$color-white;
+        background-color:$color-green-elf;
+    }
+}

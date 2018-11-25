@@ -29,12 +29,14 @@
 @import "objects/video";
 
 /* COMPONENTS */
+@import "components/button";
+@import "components/score-screen";
+@import "components/scores";
 @import "components/game-ctrls";
 @import "components/game-container";
 @import "components/santa";
 @import "components/pieces";
 
 /*#region TRUMPS */
-@import "trumps/print";
-@import "trumps/quick-fix";
+@import "trumps/global";
 /*#endregion*/
