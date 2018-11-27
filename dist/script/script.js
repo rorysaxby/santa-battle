@@ -45,14 +45,18 @@ santaBattle.prototype.copyObj = function (obj) {
 
 santaBattle.prototype.bindPlayerControls = function () {
 	document.addEventListener("keydown", this.idKey.bind(this), false);
+	document.addEventListener("keyup", this.idKey.bind(this), false);
 };
 
 santaBattle.prototype.idKey = function (e) {
+
 	switch (e.keyCode) {
 		case 38: // arrow up
 		case 87:
 			// w
-			this.keyUp();
+			if (this.keyPressedUp) {
+				this.keyUp();
+			};
 			break;
 		case 40: // down
 		case 83:
@@ -76,22 +80,60 @@ santaBattle.prototype.idKey = function (e) {
 	};
 };
 
+santaBattle.prototype.idKeyUp = function (e) {
+	switch (e.keyCode) {
+		case 38: // arrow up
+		case 87:
+			// w
+			this.clearKey('Up');
+			break;
+		case 40: // down
+		case 83:
+			// s
+			this.clearKey('Down');
+			break;
+		case 37: // left
+		case 65:
+			// a
+			this.clearKey('Left');
+			break;
+		case 39: // right
+		case 68:
+			// d
+			this.clearKey('Right');
+			break;
+		case 32:
+			// space
+
+			break;
+	};
+};
+
 /* Player Actions */
 
 santaBattle.prototype.keyUp = function () {
-	this.movePlayer('up');
+	var _ = this;
+	this.keyPressedUp = setInterval(this.movePlayer('up'), 500);
 };
 
 santaBattle.prototype.keyDown = function () {
-	this.movePlayer('down');
+	var _ = this;
+	this.keyPressedDown = setInterval(this.movePlayer('down'), 500);
 };
 
 santaBattle.prototype.keyLeft = function () {
-	this.movePlayer('left');
+	var _ = this;
+	this.keyPressedLeft = setInterval(this.movePlayer('left'), 500);
 };
 
 santaBattle.prototype.keyRight = function () {
-	this.movePlayer('right');
+	var _ = this;
+	this.keyPressedRight = setInterval(this.movePlayer('right'), 500);
+};
+
+santaBattle.prototype.clearKey = function (value) {
+	var _ = this;
+	clearInterval(_["keyPressed" + value]);
 };
 
 santaBattle.prototype.movePlayer = function (dir) {
@@ -194,12 +236,12 @@ santaBattle.prototype.pieceSetup = function (opts) {
 
 santaBattle.prototype.pieceSetup.prototype.anim = function () {
 	var _ = this;
-	this.pieceAnim = setInterval(_.animLeft.bind(_), 300);
+	this.pieceAnim = setInterval(_.animLeft.bind(_), 1);
 };
 
 santaBattle.prototype.pieceSetup.prototype.animLeft = function () {
 	this.pieceTarget.css({
-		left: this.pieceTarget[0].offsetLeft - 20 + "px"
+		left: this.pieceTarget[0].offsetLeft - 1 + "px"
 	});
 
 	if (this.pieceTarget[0].offsetLeft <= -this.pieceTarget[0].clientWidth) {
@@ -231,7 +273,7 @@ santaBattle.prototype.initPieces = function () {
 				removeFn: _.removeLoadedPiece.bind(_)
 			});
 		};
-	}, 2000); // random interval depending on level
+	}, 500); // random interval depending on level
 };
 
 santaBattle.prototype.removeLoadedPiece = function (id) {
@@ -247,7 +289,7 @@ santaBattle.prototype.removeLoadedPiece = function (id) {
 
 santaBattle.prototype.initCollisionWatch = function () {
 	var _ = this;
-	this.collisionWatch = setInterval(_.collisionTest.bind(_), 100);
+	this.collisionWatch = setInterval(_.collisionTest.bind(_), 10);
 };
 
 santaBattle.prototype.collisionTest = function () {
