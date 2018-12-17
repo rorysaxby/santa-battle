@@ -48,6 +48,9 @@ santaBattle.prototype.bindPlayerControls = function () {
 
 	var _ = this;
 
+	document.addEventListener("keydown", keyDown, false);
+	document.addEventListener("keyup", keyUp, false);
+
 	function keyDown(e) {
 		// requestAnimationFrame(keyDown);
 
@@ -83,9 +86,6 @@ santaBattle.prototype.bindPlayerControls = function () {
 		_.keysPressed[e.keyCode] = false;
 		clearInterval(_[e.keyCode]);
 	};
-
-	document.addEventListener("keydown", keyDown, false);
-	document.addEventListener("keyup", keyUp, false);
 };
 
 /* Player Actions */
@@ -201,7 +201,7 @@ santaBattle.prototype.pieceSetup = function (opts) {
 
 santaBattle.prototype.pieceSetup.prototype.anim = function () {
 	var _ = this;
-	this.pieceAnim = setInterval(_.animLeft.bind(_), 1);
+	this.pieceAnim = setInterval(_.animLeft.bind(_), 10);
 };
 
 santaBattle.prototype.pieceSetup.prototype.animLeft = function () {
@@ -238,7 +238,7 @@ santaBattle.prototype.initPieces = function () {
 				removeFn: _.removeLoadedPiece.bind(_)
 			});
 		};
-	}, 500); // random interval depending on level
+	}, 1000); // random interval depending on level
 };
 
 santaBattle.prototype.removeLoadedPiece = function (id) {

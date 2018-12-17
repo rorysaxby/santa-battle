@@ -27,8 +27,36 @@
             padding:1rem;
         }
 
+        #{$root}__scores{
+            display:inline-block;
+            li{
+                display:inline-block;
+            }
+        }
+
+        #{$root}__ctrls{
+            display:inline-block;
+        }
+
         h1{
             display:none;
+        }
+        .c-button{
+            padding:0.6rem;
+        }
+    }
+
+
+    &__ctrls{
+        position:relative;
+    
+        ul{
+            font-size:0;
+        }
+
+        li{
+            display:inline-block;
+            padding:0 0.5rem;
         }
     }
 }
