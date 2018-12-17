@@ -14,6 +14,7 @@ var santaBattle = function (opts) {
 
 	this.hiddenClass = "visually-hidden";
 
+	this.keysPressed = [];
 	this.collectedPieces = [];
 
 	if (this.opts.loadViewTarget && this.opts.player) {
@@ -44,96 +45,60 @@ santaBattle.prototype.copyObj = function (obj) {
 /* Controls */
 
 santaBattle.prototype.bindPlayerControls = function () {
-	document.addEventListener("keydown", this.idKey.bind(this), false);
-	document.addEventListener("keyup", this.idKey.bind(this), false);
-};
 
-santaBattle.prototype.idKey = function (e) {
+	var _ = this;
 
-	switch (e.keyCode) {
-		case 38: // arrow up
-		case 87:
-			// w
-			if (this.keyPressedUp) {
-				this.keyUp();
-			};
-			break;
-		case 40: // down
-		case 83:
-			// s
-			this.keyDown();
-			break;
-		case 37: // left
-		case 65:
-			// a
-			this.keyLeft();
-			break;
-		case 39: // right
-		case 68:
-			// d
-			this.keyRight();
-			break;
-		case 32:
-			// space
+	function keyDown(e) {
+		// requestAnimationFrame(keyDown);
 
-			break;
+		switch (e.keyCode) {
+			case 38: // arrow up
+			case 87:
+				// w
+				_.handleKeyDown(e.keyCode, 'up');
+				break;
+			case 40: // down
+			case 83:
+				// s
+				_.handleKeyDown(e.keyCode, 'down');
+				break;
+			case 37: // left
+			case 65:
+				// a
+				_.handleKeyDown(e.keyCode, 'left');
+				break;
+			case 39: // right
+			case 68:
+				// d
+				_.handleKeyDown(e.keyCode, 'right');
+				break;
+			case 32:
+				// space
+
+				break;
+		};
 	};
-};
 
-santaBattle.prototype.idKeyUp = function (e) {
-	switch (e.keyCode) {
-		case 38: // arrow up
-		case 87:
-			// w
-			this.clearKey('Up');
-			break;
-		case 40: // down
-		case 83:
-			// s
-			this.clearKey('Down');
-			break;
-		case 37: // left
-		case 65:
-			// a
-			this.clearKey('Left');
-			break;
-		case 39: // right
-		case 68:
-			// d
-			this.clearKey('Right');
-			break;
-		case 32:
-			// space
-
-			break;
+	function keyUp(e) {
+		_.keysPressed[e.keyCode] = false;
+		clearInterval(_[e.keyCode]);
 	};
+
+	document.addEventListener("keydown", keyDown, false);
+	document.addEventListener("keyup", keyUp, false);
 };
 
 /* Player Actions */
 
-santaBattle.prototype.keyUp = function () {
+santaBattle.prototype.handleKeyDown = function (keycode, direction) {
 	var _ = this;
-	this.keyPressedUp = setInterval(this.movePlayer('up'), 500);
-};
 
-santaBattle.prototype.keyDown = function () {
-	var _ = this;
-	this.keyPressedDown = setInterval(this.movePlayer('down'), 500);
-};
-
-santaBattle.prototype.keyLeft = function () {
-	var _ = this;
-	this.keyPressedLeft = setInterval(this.movePlayer('left'), 500);
-};
-
-santaBattle.prototype.keyRight = function () {
-	var _ = this;
-	this.keyPressedRight = setInterval(this.movePlayer('right'), 500);
-};
-
-santaBattle.prototype.clearKey = function (value) {
-	var _ = this;
-	clearInterval(_["keyPressed" + value]);
+	if (!this.keysPressed[keycode]) {
+		this[keycode] = setInterval(function () {
+			_.movePlayer(direction);
+		}, 100);
+		this.keysPressed[keycode] = true;
+	};
 };
 
 santaBattle.prototype.movePlayer = function (dir) {
